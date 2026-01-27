@@ -1,0 +1,40 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: lunarlaurus-mcp-server
+
+# LLM Configuration
+llm:
+  gpu:
+    endpoint: http://localhost:11434/api/generate
+    model: mistral:7b-instruct
+  cpu:
+    endpoint: http://localhost:8080/completion
+    model: mistral-7b-instruct-q4
+
+# Embedding Configuration
+embedding:
+  endpoint: http://localhost:11434/api/embeddings
+  model: nomic-embed-text
+
+# Logging
+logging:
+  level:
+    com.lunarlaurus.mcp: DEBUG
+    org.springframework: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

@@ -1,0 +1,108 @@
+version: '3.8'
+
+services:
+  # Ollama GPU Service - Fast inference on RTX4000
+  ollama-gpu:
+    image: ollama/ollama:latest
+    container_name: lunarlaurus-ollama-gpu
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-gpu-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_NUM_PARALLEL=2
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - lunarlaurus-network
+
+  # Llama.cpp CPU Service - Medium tasks on Intel 8260
+  llama-cpp-cpu:
+    build:
+      context: ./docker/llama-cpp
+      dockerfile: Dockerfile
+    container_name: lunarlaurus-llama-cpp
+    ports:
+      - "8080:8080"
+    volumes:
+      - llama-cpp-models:/models
+    environment:
+      - MODEL_PATH=/models/mistral-7b-instruct-q4_K_M.gguf
+      - N_CTX=8192
+      - N_THREADS=20
+    restart: unless-stopped
+    networks:
+      - lunarlaurus-network
+
+  # MCP Server - Java/Spring Boot
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    container_name: lunarlaurus-mcp-server
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LLM_GPU_ENDPOINT=http://ollama-gpu:11434/api/generate
+      - LLM_CPU_ENDPOINT=http://llama-cpp-cpu:8080/completion
+      - EMBEDDING_ENDPOINT=http://ollama-gpu:11434/api/embeddings
+    depends_on:
+      - ollama-gpu
+      - llama-cpp-cpu
+    restart: unless-stopped
+    networks:
+      - lunarlaurus-network
+
+  # Optional: Monitoring with Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: lunarlaurus-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    restart: unless-stopped
+    networks:
+      - lunarlaurus-network
+    profiles:
+      - monitoring
+
+  # Optional: Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: lunarlaurus-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    networks:
+      - lunarlaurus-network
+    profiles:
+      - monitoring
+
+volumes:
+  ollama-gpu-data:
+  llama-cpp-models:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  lunarlaurus-network:
+    driver: bridge
