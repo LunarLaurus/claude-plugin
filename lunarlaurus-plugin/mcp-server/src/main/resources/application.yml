@@ -28,6 +28,22 @@ embedding:
   endpoint: http://localhost:11434/api/embeddings
   model: nomic-embed-text
 
+# Docker Configuration
+docker:
+  host: unix:///var/run/docker.sock  # Override for Windows: tcp://localhost:2375
+  image-pull-timeout: 300000         # 5 minutes in milliseconds
+
+# Model Registry Configuration
+registry:
+  file: ./data/registry.yml
+  port-range:
+    start: 11400
+    end: 11500
+  health-check:
+    enabled: true
+    interval: 30000                  # Check every 30 seconds
+    initial-delay: 10000             # Wait 10s after container start
+
 # Logging
 logging:
   level:
