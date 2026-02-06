@@ -1,0 +1,21 @@
+# Stdio profile - used when launched as MCP child process by Claude Code
+# Disables embedded web server so stdout is reserved for MCP JSON-RPC
+
+spring:
+  main:
+    web-application-type: none
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        stdio: true
+
+# Route ALL logging to file (stdout must be clean for MCP protocol)
+logging:
+  file:
+    name: ./logs/lunarlaurus-mcp-stdio.log
+  pattern:
+    console: ""
+  level:
+    root: INFO
+    com.lunarlaurus.mcp: DEBUG

@@ -6,6 +6,13 @@ server:
 spring:
   application:
     name: lunarlaurus-mcp-server
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: lunarlaurus-local
+        version: 1.0.0
+        type: SYNC
 
 # LLM Configuration
 llm:
