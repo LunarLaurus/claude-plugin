@@ -1,0 +1,26 @@
+# Agent OS Standards Index
+# Auto-generated index of coding standards for this project
+
+java:
+  class-organization:
+    description: Public classes in separate files, static factory methods for common patterns
+  lombok-dto-annotations:
+    description: Full Lombok stack for DTOs with validation, empty class exception
+
+mcp:
+  tool-descriptions:
+    description: Include hardware details and performance hints in @Tool descriptions
+  tool-dto-patterns:
+    description: Validation and DTO usage patterns for MCP tool interfaces
+  tool-naming:
+    description: Use snake_case for MCP tool names, camelCase for Java methods
+
+spring-boot:
+  custom-config-namespaces:
+    description: Domain config in custom namespaces, not under spring.*
+  service-delegation:
+    description: Tool providers delegate immediately to service layer, no logic
+  stdio-profile-config:
+    description: MCP stdio profile - disable web, route logs to file, keep stdout clean
+  value-with-defaults:
+    description: Always provide sensible defaults in @Value annotations
