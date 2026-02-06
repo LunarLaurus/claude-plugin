@@ -35,14 +35,15 @@ public class McpToolProvider {
 
     private static final int GPU_MAX_TOKENS = 2000;
 
-    @Tool(name = "local_llm", description = "Generate text using a local LLaMA/Mistral model running on rack servers. "
-            + "Supports Q&A, content generation, and analysis. Auto-routes between GPU (RTX4000, fast, <2k tokens) "
-            + "and CPU (Intel 8260, slower, handles longer context) backends.")
+    @Tool(name = "local_llm", description = "Generate text using a local LLaMA/Mistral model. Supports Q&A, content generation, and analysis. "
+            + "Auto-routes between dynamically created backends (via /api/models REST API) or static GPU (RTX4000, fast, <2k tokens) "
+            + "and CPU (Intel 8260, slower, handles longer context) backends. Dynamic backends enable on-demand model deployment from HuggingFace. "
+            + "Specify 'backend' param to override auto-routing.")
     public String localLlm(
             @ToolParam(description = "The prompt for text generation") String prompt,
             @ToolParam(description = "Maximum tokens to generate (default 512)", required = false) Integer maxTokens,
             @ToolParam(description = "Sampling temperature 0-1 (default 0.2)", required = false) Double temperature,
-            @ToolParam(description = "Backend: 'auto' (smart routing), 'gpu' (RTX4000), or 'cpu' (Intel 8260). Default: auto", required = false) String backend) {
+            @ToolParam(description = "Backend: 'auto' (smart routing to dynamic or static), model name (e.g., 'mistral:7b'), 'gpu' (RTX4000), or 'cpu' (Intel 8260). Default: auto", required = false) String backend) {
 
         int tokens = maxTokens != null ? maxTokens : 512;
         double temp = temperature != null ? temperature : 0.2;
