@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "lunarlaurus-local": {
+      "command": "cmd",
+      "args": [
+        "/c", "java", "-jar",
+        "lunarlaurus-plugin/mcp-server/target/mcp-server-1.0.0.jar",
+        "--spring.profiles.active=stdio"
+      ],
+      "env": {
+        "LLM_GPU_ENDPOINT": "http://localhost:11434/api/generate",
+        "LLM_CPU_ENDPOINT": "http://localhost:8080/completion",
+        "EMBEDDING_ENDPOINT": "http://localhost:11434/api/embeddings"
+      }
+    }
+  }
+}

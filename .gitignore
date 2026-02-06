@@ -1,0 +1,22 @@
+# Logs
+logs/
+*.log
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Windows artifacts
+nul
+
+# Build artifacts
+target/
+*.jar.original
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
